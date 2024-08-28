@@ -9,6 +9,7 @@ export const expenses = pgTable(
         userId: text('user_id').notNull(),
         title: text('title').notNull(),
         amount: numeric("amount", {precision: 12, scale: 2}).notNull(),
+        expenseGroup: text('expense_group'),
         date: date("date").notNull(),
         createdAt: timestamp('created_at').defaultNow(),
     }, (expenses) => {
@@ -23,7 +24,7 @@ export const expenses = pgTable(
 export const insertExpensesSchema = createInsertSchema(expenses, {
     title: z.string()
         .min(3, {message: 'Title must be at least 3 characters'}),
-    amount: z.string().regex(/^\d+(\.\d{1,2})?$/, {message: 'Amount must be a positive number'}),
+    amount: z.string().regex(/^\d+(\.\d{1,2})?$/, {message: 'Amount must be a positive number'})
 });
 // Schema for selecting a expenses - can be used to validate API responses
 export const selectExpensesSchema = createSelectSchema(expenses);

@@ -3,7 +3,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": [
-        "/resources/js/*"
+        "./src/*"
+      ],
+      "@server/*": [
+        "../server/*"
       ]
     }
   }

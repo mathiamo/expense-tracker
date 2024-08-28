@@ -1,6 +1,6 @@
 // src/routes/_authenticated.tsx
-import {createFileRoute, Outlet, redirect} from "@tanstack/react-router";
-import { userQueryOptions } from "../lib/api.ts";
+import {createFileRoute, Outlet} from "@tanstack/react-router";
+import {userQueryOptions} from "../lib/api.ts";
 import {Button} from "../components/ui/button.tsx";
 
 
@@ -31,8 +31,7 @@ export const Route = createFileRoute('/_authenticated')({
         const queryClient = context.queryClient
 
         try {
-            const data = await queryClient.fetchQuery(userQueryOptions);
-            return data;
+            return await queryClient.fetchQuery(userQueryOptions);
         } catch (e) {
             return {user: null};
         }

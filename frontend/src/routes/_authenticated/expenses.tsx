@@ -1,11 +1,13 @@
 import {createFileRoute} from '@tanstack/react-router'
-import {deleteExpense, getAllExpensesQueryOptions, loadingCreateExpenseQueryOptions} from "../../lib/api.ts";
+import {deleteExpense, getAllExpensesQueryOptions, loadingCreateExpenseQueryOptions} from '@/lib/api.ts';
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow,} from "../../components/ui/table"
-import {Skeleton} from "../../components/ui/skeleton.tsx";
-import {Button} from "../../components/ui/button.tsx";
+import {Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow,} from "@/components/ui/table"
+import {Skeleton} from "@/components/ui/skeleton.tsx";
+import {Button} from "@/components/ui/button.tsx";
 import {Trash} from "lucide-react";
 import {toast} from "sonner";
+import {Fragment} from "react";
+import {Expense} from '@server/sharedTypes.ts';
 
 export const Route = createFileRoute('/_authenticated/expenses')({
     component: Expenses,
@@ -15,6 +17,15 @@ function Expenses() {
     const {isPending, error, data} = useQuery(getAllExpensesQueryOptions);
     const { data: loadingCreateExpense } = useQuery(loadingCreateExpenseQueryOptions)
 
+    // Group expenses by expenseGroup
+    const groupedExpenses = data?.expenses.reduce((acc, expense) => {
+        const key = expense.expenseGroup || "null";
+        if (!acc[key]) {
+            acc[key] = [];
+        }
+        acc[key].push(expense);
+        return acc;
+    }, {} as Record<string, Expense[]>);
 
     if (error) return 'An error has occurred: ' + error.message;
     return (
@@ -36,24 +47,33 @@ function Expenses() {
                             <TableCell><Skeleton className="h-4" /></TableCell>
                             <TableCell>{loadingCreateExpense?.expense.title}</TableCell>
                             <TableCell>{loadingCreateExpense?.expense.amount}</TableCell>
-                            <TableCell>{loadingCreateExpense?.expense.date}</TableCell>
+                            <TableCell>{loadingCreateExpense?.expense.date.substring(0, 10)}</TableCell>
                             <TableCell><Skeleton className="h-4" /></TableCell>
                         </TableRow>
                     )}
 
-                    { isPending
-                        ?  <TableSkeleton />:
-                    data?.expenses.map((expense) => (
-                        <TableRow key={expense.id}>
-                            <TableCell>{expense.id}</TableCell>
-                            <TableCell>{expense.title}</TableCell>
-                            <TableCell>{expense.amount}</TableCell>
-                            <TableCell>{expense.date}</TableCell>
-                            <TableCell>
-                                <ExpenseDeleteButton id={expense.id}/>
-                            </TableCell>
-                        </TableRow>
-                    ))}
+                    {isPending ?
+                            <TableSkeleton /> : (
+                            Object.entries(groupedExpenses).map(([group, expenses]) => (
+
+                                <Fragment key={group}>
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="font-bold">{group != "null" ? group : 'Unspecified'}</TableCell>
+                                    </TableRow>
+                                    {expenses.map((expense) => (
+                                        <TableRow key={expense.id}>
+                                            <TableCell>{expense.id}</TableCell>
+                                            <TableCell>{expense.title}</TableCell>
+                                            <TableCell>{expense.amount}</TableCell>
+                                            <TableCell>{expense.date}</TableCell>
+                                            <TableCell>
+                                                <ExpenseDeleteButton id={expense.id} />
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </Fragment>
+                            ))
+                        )}
                 </TableBody>
 
             </Table>

@@ -29,6 +29,13 @@
       "when": 1724150150451,
       "tag": "0003_deep_moon_knight",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1724831868594,
+      "tag": "0004_glorious_christian_walker",
+      "breakpoints": true
     }
   ]
 }

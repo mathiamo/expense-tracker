@@ -8,8 +8,6 @@ export const Route = createFileRoute('/_authenticated/profile')({
     component: Profile,
 })
 
-
-
 function Profile() {
     const {isPending, error, data} = useQuery(userQueryOptions);
     if(isPending) return "loading"

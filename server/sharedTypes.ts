@@ -8,6 +8,8 @@ export const expenseSchema = insertExpensesSchema.omit({
     id: true,
 })
 
-export const createExpenseSchema = expenseSchema.omit({id: true})
+export const createExpenseSchema = expenseSchema.omit({id: true })
 
 export type CreateExpense = z.infer<typeof createExpenseSchema>;
+
+export type Expense = z.infer<typeof expenseSchema>;
